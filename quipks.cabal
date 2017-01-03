@@ -1,0 +1,11 @@
+name:                quipks
+version:             0.1.0.0
+license:             AllRightsReserved
+license-file:        COPYRIGHT
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable quipks
+  main-is:             Main.hs
+  other-extensions:    FlexibleContexts, FlexibleInstances, MultiParamTypeClasses
+  build-depends:       base >=4.6 && <4.7, containers >=0.5 && <0.6, matrix >=0.3 && <0.4, array >=0.4 && <0.5
