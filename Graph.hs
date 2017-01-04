@@ -5,6 +5,7 @@ import Data.List
 
 import EntangleMonad
 import Examples
+import BitQubitId
 
 
 type Vertex = Int
@@ -108,9 +109,9 @@ showGraphViz (LabGraph gr lab)  =
 		showEdge (MeasureEdge from t to) = show from ++ " -> " ++ show to ++ " [label = \"" ++ showTripleMeasure t ++ "\"];\n"
 		showEdge (LoopEdge from t) = show from ++ " -> " ++ "1" ++ " [label = \"" ++ t ++ "\"];\n"
 		showNode v = show v ++ " [label = " ++  (show $ intercalate ", " $ map showPair $ sort $ lab v) ++ "];\n"
-		showTripleGate (gate,qubits1,qubits2) = "Gate '" ++ gate ++ "' on qubit" ++ (if length qubits1 == 1 then " " else "s ") ++ showQubitList qubits1 ++
+		showTripleGate (gate,qubits1,qubits2) = "Gate '" ++ gate ++ "' on " ++ showQubitList qubits1 ++
 												(if length qubits2 > 0 then " controls " else "") ++ showQubitList qubits2
-		showTripleMeasure (qubit,bit) = "Measure qubit " ++ (show $ unqubit qubit) ++ " -> bit " ++ (show $ unbit bit)
-		showPair (bit,int) = "Bit " ++ (show $ unbit bit) ++ "=" ++ show int
-		showQubitList l = (intercalate "," $ map (show . unqubit) l)
+		showTripleMeasure (qubit,bit) = "Measure " ++ show qubit ++ " -> " ++ show bit
+		showPair (bit,int) = show bit ++ "=" ++ show int
+		showQubitList l = intercalate "," $ map show l
 
