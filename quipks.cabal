@@ -1,7 +1,7 @@
 name:                quipks
 version:             0.1.0.0
-license:             AllRightsReserved
-license-file:        COPYRIGHT
+license:             MIT
+license-file:        LICENSE
 build-type:          Simple
 cabal-version:       >=1.10
 
