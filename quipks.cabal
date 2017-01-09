@@ -7,5 +7,7 @@ cabal-version:       >=1.10
 
 executable quipks
   main-is:             Main.hs
+  other-modules:       Examples, Graph
   other-extensions:    FlexibleContexts, FlexibleInstances, MultiParamTypeClasses
-  build-depends:       base >=4.6 && <4.7, containers >=0.5 && <0.6, matrix >=0.3 && <0.4, array >=0.4 && <0.5
+  build-depends:       base >=4.6 && <4.10, containers >=0.5 && <0.6, matrix >=0.3 && <0.4, array >=0.4 && <0.6, quipper-core >=0.7 && <0.9, entangle >=0.1 && <0.2
+  default-language:    Haskell2010
