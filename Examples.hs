@@ -8,28 +8,6 @@ exitOn :: Bool -> Circ RecAction
 exitOn True  = return Exit
 exitOn False = return Loop
 
-----------------------------------------------------------------------
-
-qftInternal :: [Qubit] -> Circ [Qubit]
-qftInternal [] = return []
-qftInternal [x] = do
-  hadamard x
-  return [x]
-qftInternal (x:xs) = do
-  xs' <- qftInternal xs
-  xs'' <- rotations x xs' (length xs')
-  x' <- hadamard x
-  return (x':xs'')
-  where
-    -- Auxiliary function used by 'qft'.
-    rotations :: Qubit -> [Qubit] -> Int -> Circ [Qubit]
-    rotations _ [] _ = return []
-    rotations c (q:qs) n = do
-      qs' <- rotations c qs n
-      q' <- rGate ((n + 1) - length qs) q `controlled` c
-      return (q':qs')
-
-----------------------------------------------------------------------
 
 myfourthcirc :: Qubit -> Circ Qubit
 myfourthcirc q1 = do
@@ -451,32 +429,3 @@ branchCirc (qa, qb) = do
        then hadamard_at qa
        else qnot_at qa
     exitOn bool
-
-{- branchCircBoth :: (Qubit, Qubit) -> Circ (Qubit, Qubit, Bool)
-branchCircBoth (qa, qb) = do
-    hadamard_at qa
-    m <- measure qb
-    bool <- dynamic_lift m
-    if bool
-       then hadamard_at qa
-       else qnot_at qa
-    return (qa, qb, bool)
-
-branchCircQuipper (qa, qb) = do
-  (qa, qb, _) <- branchCircBoth
-  return (qa, qb)
-
-branchCircQpmc (qa, qb) = do
-  (_, _, bool) <- branchCircBoth
-  exitOn bool-}
-
-interfCirc :: (Qubit, Qubit) -> Circ RecAction
-interfCirc (qa, qb) = do
-  hadamard_at qa
-  rGate_at 2 qb `controlled` qa
-  qftInternal [qa,qb]
-  ma <- measure qa
-  mb <- measure qb
-  boola <- dynamic_lift ma
-  boolb <- dynamic_lift mb
-  exitOn $ boola == boolb
