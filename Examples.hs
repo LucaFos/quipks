@@ -1,6 +1,6 @@
 module Examples where
 
-import           Quipper
+import Quipper
 
 data RecAction = Loop | Exit deriving Show
 
@@ -9,29 +9,29 @@ exitOn True  = return Exit
 exitOn False = return Loop
 
 
-myfourthcirc :: Qubit -> Circ Qubit
+myfourthcirc :: Qubit -> Circ RecAction
 myfourthcirc q1 = do
     hadamard q1
     qnot q1
     hadamard q1
     qnot q1
-    return q1
+    return Exit
 
-mythirdcirc :: (Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit)
+mythirdcirc :: (Qubit, Qubit, Qubit) -> Circ RecAction
 mythirdcirc (q1, q2, q3) = do
     qnot_at q2 `controlled` q1
     qnot_at q2 `controlled` q3
     qnot_at q2 `controlled` q1
     qnot_at q2 `controlled` q3
-    return (q1, q2, q3)
+    return Exit
 
-myothercirc :: Qubit -> Circ Qubit
+myothercirc :: Qubit -> Circ RecAction
 myothercirc q1 = do
     hadamard q1
     hadamard q1
-    return q1
+    return Exit
 
-mycirc :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit)
+mycirc :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 mycirc (q1, q2, q3, q4, q5, q6) = do
     qnot_at q1 `controlled` q6
     qnot_at q2 `controlled` q3
@@ -39,17 +39,18 @@ mycirc (q1, q2, q3, q4, q5, q6) = do
     qnot_at q4 `controlled` q5
     qnot_at q3 `controlled` q4
     gate_W q1 q3
-    return (q1, q2, q3, q4, q5, q6)
+    return Exit
 
-deutsch :: (Qubit, Qubit) -> Circ Bit
+deutsch :: (Qubit, Qubit) -> Circ RecAction
 deutsch (q1, q2) = do
     hadamard q1
     hadamard q2
     qnot_at q2 `controlled` q1
     hadamard q1
     measure q1
+    return Exit
 
-deutschJozsaNaive :: (Qubit, Qubit, Qubit) -> Circ (Bit, Bit)
+deutschJozsaNaive :: (Qubit, Qubit, Qubit) -> Circ RecAction
 deutschJozsaNaive (q1, q2, q3) = do
     hadamard q1
     hadamard q2
@@ -59,45 +60,49 @@ deutschJozsaNaive (q1, q2, q3) = do
     hadamard q1
     hadamard q2
     measure (q1, q2)
+    return Exit
 
-circW :: (Qubit, Qubit) -> Circ (Bit, Bit)
+circW :: (Qubit, Qubit) -> Circ RecAction
 circW (q1, q2) = do
     gate_W q1 q2
     gate_W q2 q1
     measure (q1, q2)
+    return Exit
 
-oneq :: Qubit -> Circ Qubit
+oneq :: Qubit -> Circ RecAction
 oneq q1 = do
-  hadamard_at q1
-  return q1
+    hadamard_at q1
+    return Exit
 
 
-doubleMeas :: (Qubit, Qubit, Qubit) -> Circ (Bit, Bit)
-doubleMeas (q1, q2, _) = measure (q1, q2)
+doubleMeas :: (Qubit, Qubit, Qubit) -> Circ RecAction
+doubleMeas (q1, q2, _) = do
+    measure (q1, q2)
+    return Exit
 
-strange :: (Qubit, Qubit) -> Circ (Bit, Bit)
+strange :: (Qubit, Qubit) -> Circ RecAction
 strange (q1, q2) = do
   c2 <- measure q2
   hadamard q1
   hadamard q1
   c1 <- measure q1
-  return (c1, c2)
+  return Exit
 
-invCnot :: (Qubit, Qubit) -> Circ (Qubit, Qubit)
+invCnot :: (Qubit, Qubit) -> Circ RecAction
 invCnot (q1, q2) = do
     qnot_at q1 `controlled` q2
     qnot_at q2 `controlled` q1
     --qnot_at q1 `controlled` q2
-    return (q1, q2)
+    return Exit
 
-testMultiple :: (Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit)
+testMultiple :: (Qubit, Qubit, Qubit) -> Circ RecAction
 testMultiple (q1, q2, q3) = do
     gate_W q1 q2
     gate_W q2 q1
     qnot_at q1 `controlled` q3
-    return (q1, q2, q3)
+    return Exit
 
-groverNaive :: (Qubit, Qubit, Qubit) -> Circ (Bit, Bit)
+groverNaive :: (Qubit, Qubit, Qubit) -> Circ RecAction
 groverNaive (q1,q2,q3) = do
     hadamard_at q1
     hadamard_at q2
@@ -118,8 +123,9 @@ groverNaive (q1,q2,q3) = do
     hadamard_at q2
     hadamard_at q3
     measure (q1,q2)
+    return Exit
 
-groverNaive2 :: (Qubit, Qubit, Qubit) -> Circ (Bit, Bit)
+groverNaive2 :: (Qubit, Qubit, Qubit) -> Circ RecAction
 groverNaive2 (q1,q2,q3) = do
     qa <- hadamard q1
     qb <- hadamard q2
@@ -140,9 +146,10 @@ groverNaive2 (q1,q2,q3) = do
     qp <- hadamard qn
     _ <- hadamard qd
     measure (qo,qp)
+    return Exit
 
 
-testMatrix_6 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit)
+testMatrix_6 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_6 (q1, q2, q3, q4, q5, q6) = do
     qnot_at q1 `controlled` q6
     qnot_at q1 `controlled` q5
@@ -153,10 +160,10 @@ testMatrix_6 (q1, q2, q3, q4, q5, q6) = do
     qnot_at q1 `controlled` q6
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q6
-    return (q1,q2,q3,q4,q5,q6)
+    return Exit
 
 
-testMatrix_5 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit)
+testMatrix_5 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_5 (q1, q2, q3, q4, q5, q6, q7) = do
     qnot_at q1 `controlled` q7
     qnot_at q1 `controlled` q6
@@ -169,9 +176,9 @@ testMatrix_5 (q1, q2, q3, q4, q5, q6, q7) = do
     qnot_at q1 `controlled` q7
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q7
-    return (q1,q2,q3,q4,q5,q6,q7)
+    return Exit
 
-testMatrix_4 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit)
+testMatrix_4 :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_4 (q1, q2, q3, q4, q5, q6, q7, q8) = do
     qnot_at q1 `controlled` q8
     qnot_at q1 `controlled` q7
@@ -188,9 +195,9 @@ testMatrix_4 (q1, q2, q3, q4, q5, q6, q7, q8) = do
     qnot_at q1 `controlled` q8
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q8
-    return (q1,q2,q3,q4,q5,q6,q7,q8)
+    return Exit
 
-testMatrix_3 :: (Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit, Qubit)
+testMatrix_3 :: (Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_3 (q1, q2, q3, q4, q5) = do
     qnot_at q1 `controlled` q5
     qnot_at q1 `controlled` q4
@@ -199,31 +206,31 @@ testMatrix_3 (q1, q2, q3, q4, q5) = do
     qnot_at q1 `controlled` q5
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q5
-    return (q1,q2,q3,q4,q5)
+    return Exit
 
-testMatrix_2 :: (Qubit, Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit, Qubit)
+testMatrix_2 :: (Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_2 (q1, q2, q3, q4) = do
     qnot_at q1 `controlled` q4
     qnot_at q1 `controlled` q3
     qnot_at q1 `controlled` q4
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q4
-    return (q1,q2,q3,q4)
+    return Exit
 
-testMatrix_1 :: (Qubit, Qubit, Qubit) -> Circ (Qubit, Qubit, Qubit)
+testMatrix_1 :: (Qubit, Qubit, Qubit) -> Circ RecAction
 testMatrix_1 (q1, q2, q3) = do
     qnot_at q1 `controlled` q3
     qnot_at q1 `controlled` q2
     qnot_at q1 `controlled` q3
-    return (q1,q2,q3)
+    return Exit
 
-test_if :: (Qubit, Qubit, Qubit) -> Circ Qubit
+test_if :: (Qubit, Qubit, Qubit) -> Circ RecAction
 test_if (q1, q2, q3) = do
     m1 <- measure q1
     bool1 <- dynamic_lift m1
-    return $ if bool1 then q2 else q3
+    return $ if bool1 then Exit else Loop
 
-recCirc :: (Qubit, Qubit) -> Circ (Qubit, Qubit)
+recCirc :: (Qubit, Qubit) -> Circ RecAction
 recCirc (qa,qb) = do
   qc <- hadamard qa
   qd <- qnot qc `controlled` qb
@@ -233,7 +240,7 @@ recCirc (qa,qb) = do
   _ <- dynamic_lift m2
   if bool1
     then
-      return (qd,qb)
+      return Exit
     else
       recCirc (qd,qb)
 
@@ -248,7 +255,7 @@ recCirc' (qa, qb) = do
   exitOn $ bool1 && bool2
 ------------------------------
 
-groverSix :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ (Bit, Bit, Bit, Bit, Bit, Bit)
+groverSix :: (Qubit, Qubit, Qubit, Qubit, Qubit, Qubit, Qubit) -> Circ RecAction
 groverSix (q1,q2,q3, q4, q5, q6, q7) = do
     hadamard_at q1
     hadamard_at q2
@@ -293,6 +300,7 @@ groverSix (q1,q2,q3, q4, q5, q6, q7) = do
 
     hadamard_at q7
     measure (q1,q2,q3,q4,q5,q6)
+    return Exit
 
 ---------------------------------
 

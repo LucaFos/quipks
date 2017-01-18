@@ -46,6 +46,7 @@ edges g = [(GateEdge v1 l v2) | v1 <- indices g, (GateEdge v1 l v2) <- g!v1] ++
 
 
 -- Generates a labGraph from a tree representing the quantum circuit
+labGraphFromTree :: CircTree RecAction -> LabGraph n e
 labGraphFromTree tree = LabGraph graph labels
     where
         graph = buildG bounds edges
@@ -74,6 +75,7 @@ getNodeLabels (MeasureNode _ bit t1 t2) s n
 getNodeLabels (LeafNode _ ) s _ = s
 
 -- Initially set the value of all bits to be 0
+initLabels :: Num t1 => CircTree t -> [(BitId, t1)]
 initLabels (GateNode _ _ _ t) = initLabels t
 initLabels (MeasureNode qubit bit t1 t2) = (bit,0):(initLabels t1)
 initLabels (LeafNode _) = []
@@ -87,6 +89,7 @@ numOfGates (LeafNode _) = 1
 
 
 -- Computes the edges required to represent the whole circuit
+extractGates :: CircTree RecAction -> Vertex -> [Edge]
 extractGates (GateNode gate qubits1 qubits2 t) n = (GateEdge n (gate,qubits1,qubits2) (n+1)):extractGates t (n+1)
 extractGates (MeasureNode qubit bit t1 t2) n = (MeasureEdge n (qubit,bit) (n+1)):
                                                (MeasureEdge n (qubit,bit) (n + numOfGates t1 + 1)):

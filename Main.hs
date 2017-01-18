@@ -13,3 +13,6 @@ main = putStrLn $ showGraphViz $ labGraphFromTree tree
             --circ = groverRec      -- needs a long time to compute the .pdf
             --circ = groverRecFive
             --circ = branchCirc
+            --circ = myfourthcirc
+            --circ = test_if
+            --circ = groverSix
